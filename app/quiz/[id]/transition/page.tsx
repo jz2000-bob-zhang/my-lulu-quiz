@@ -135,4 +135,3 @@ export default function TransitionPage({ params }: { params: { id: string } }) {
       <TransitionContent quizId={quizId} />
     </Suspense>
   );
-}

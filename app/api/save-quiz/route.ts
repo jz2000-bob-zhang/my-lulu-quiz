@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import OSS from 'ali-oss';
+import { kv } from '@vercel/kv';
 
 // Define the structure of the data we expect to receive
 interface QuizData {
@@ -14,25 +14,7 @@ export async function POST(request: Request) {
     const body: QuizData = await request.json();
     const { quizId, answers, luluQuestions } = body;
 
-    // --- OSS Configuration ---
-    // IMPORTANT: These credentials should be set as environment variables
-    // in your deployment environment. Create a .env.local file in the root
-    // of your project for local development.
-    //
-    // .env.local file content:
-    // OSS_REGION=your-oss-region
-    // OSS_ACCESS_KEY_ID=your-access-key-id
-    // OSS_ACCESS_KEY_SECRET=your-access-key-secret
-    // OSS_BUCKET=your-bucket-name
-    //
-    const client = new OSS({
-      region: process.env.OSS_REGION,
-      accessKeyId: process.env.OSS_ACCESS_KEY_ID,
-      accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET,
-      bucket: process.env.OSS_BUCKET,
-    });
-
-    // Prepare the data for upload
+    // Prepare the data for storage
     const results = {
       quizId,
       luluAnswers: answers,
@@ -40,28 +22,25 @@ export async function POST(request: Request) {
       submittedAt: new Date().toISOString(),
     };
 
-    // Define the path and filename in the OSS bucket
-    const fileName = `quiz-results/${quizId}-${new Date().getTime()}.json`;
+    // --- Vercel KV Storage ---
+    // The Vercel KV client is automatically configured by environment variables
+    // when deployed on Vercel. For local development, you'll need to link
+    // your project to a Vercel KV store. See the deployment guide for details.
+
+    // We'll create a unique key for this quiz submission.
+    const key = `quiz:${quizId}:${new Date().getTime()}`;
     
-    // Upload the data as a JSON file
-    const result = await client.put(
-      fileName,
-      Buffer.from(JSON.stringify(results, null, 2)), // Use Buffer for content
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    // Use kv.set() to store the entire results object.
+    await kv.set(key, JSON.stringify(results));
 
     // Return a success response
     return NextResponse.json({
       message: 'Quiz data saved successfully!',
-      ossUrl: result.url,
+      storageKey: key,
     });
 
   } catch (error) {
-    console.error('Error saving quiz data to OSS:', error);
+    console.error('Error saving quiz data to Vercel KV:', error);
     
     // Return a generic error response
     return NextResponse.json(

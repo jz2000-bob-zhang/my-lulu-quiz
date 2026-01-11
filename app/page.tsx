@@ -10,8 +10,8 @@ export default function Home() {
   const router = useRouter();
 
   const handleStart = () => {
-    // The quiz ID 'test' is used here as a default.
-    router.push('/quiz/test');
+    // Navigate directly to the first question, skipping the quiz welcome page.
+    router.push('/quiz/test/questions?q=0');
   };
 
   return (

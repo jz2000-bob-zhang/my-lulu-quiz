@@ -154,7 +154,7 @@ function QuestionsContent({ quizId }: { quizId: string }) {
                   <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#FF6B9D] to-[#FFA8C5] flex items-center justify-center text-white font-bold flex-shrink-0 shadow-lg text-lg">
                     {currentQuestionNumber}
                   </div>
-                  <h2 className="text-2xl font-semibold text-[#2D2D2D] leading-snug max-w-lg">
+                  <h2 className="text-2xl font-semibold text-[#2D2D2D] leading-snug max-w-lg font-display">
                     {question.question}
                   </h2>
                 </div>

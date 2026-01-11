@@ -132,7 +132,7 @@ export default function QuizWelcomePage({ params }: { params: { id: string } }) 
           transition={{ delay: 0.4 }}
           className="space-y-4 mb-8"
         >
-          <h1 className="text-4xl font-bold text-[#2D2D2D]">
+          <h1 className="text-4xl font-bold text-[#2D2D2D] font-display">
             嗨，Lulu！
           </h1>
           

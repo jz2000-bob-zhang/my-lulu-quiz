@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
-import { Manrope, Playfair_Display } from "next/font/google";
+import { Manrope, ZCOOL_KuaiLe } from "next/font/google";
 import "./globals.css";
 
+// Font for the body text
 const manrope = Manrope({
   variable: "--font-body",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const playfair = Playfair_Display({
+// New artistic font for display text (headings)
+const zcool = ZCOOL_KuaiLe({
   variable: "--font-display",
-  subsets: ["latin"],
+  subsets: ["latin"], // Chinese characters are supported by default
+  weight: "400",    // This font only comes in the 400 weight
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -25,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${manrope.variable} ${playfair.variable} font-body antialiased`}
+        className={`${manrope.variable} ${zcool.variable} font-body antialiased`}
       >
         {children}
       </body>
