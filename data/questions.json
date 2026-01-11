@@ -1,0 +1,184 @@
+
+[
+  {
+    "id": 1,
+    "type": "text",
+    "question": "第一次见到我时，你心里的第一印象是什么",
+    "bobAnswer": "御姐，好看，飒，但是估计有点渣，嘿嘿",
+    "photoUrl": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800"
+  },
+  {
+    "id": 2,
+    "type": "text",
+    "question": "你最欣赏我哪一点？",
+    "bobAnswer": "独立自我，但是又有自己的判断；另外，腿长"
+  },
+  {
+    "id": 3,
+    "type": "text",
+    "question": "你更喜欢安静的独处，还是热闹的聚会？为什么？",
+    "bobAnswer": "独处。我社恐"
+  },
+  {
+    "id": 4,
+    "type": "text",
+    "question": "你觉得“爱”是什么？用三个词形容一下。",
+    "bobAnswer": "性；欣赏；可以付出我的一切；"
+  },
+  {
+    "id": 5,
+    "type": "text",
+    "question": "你觉得自己最容易被什么小事打动？",
+    "bobAnswer": "ta总是想和我说话，无论什么时候"
+  },
+  {
+    "id": 6,
+    "type": "text",
+    "question": "你希望十年后的自己是什么样子？",
+    "bobAnswer": "醒来以及睡前都不会焦虑，并旁边永远躺着我爱的人"
+  },
+  {
+    "id": 7,
+    "type": "text",
+    "question": "你最喜欢的季节是？",
+    "bobAnswer": "秋天"
+  },
+  {
+    "id": 8,
+    "type": "text",
+    "question": "当你闲下来， 你更想做什么。",
+    "bobAnswer": "和她一起听音乐"
+  },
+  {
+    "id": 9,
+    "type": "text",
+    "question": "你理想中的家庭生活是什么样子的？",
+    "bobAnswer": "两个人哪怕打完一架，第二天也能和好如初"
+  },
+  {
+    "id": 10,
+    "type": "text",
+    "question": "你觉得自己什么时候最有自信？",
+    "bobAnswer": "感到被需要"
+  },
+  {
+    "id": 11,
+    "type": "text",
+    "question": "你最喜欢的一首歌是什么？可以分享给我听吗？",
+    "bobAnswer": "Forever    -R.Kelly"
+  },
+  {
+    "id": 12,
+    "type": "text",
+    "question": "你有没有出轨过，哪怕心里出轨",
+    "bobAnswer": "有"
+  },
+  {
+    "id": 13,
+    "type": "text",
+    "question": "你为哪个前任哭的最多",
+    "bobAnswer": "Lu子"
+  },
+  {
+    "id": 14,
+    "type": "text",
+    "question": "你最喜欢的菜系排名是什么？说出前三",
+    "bobAnswer": "粤菜，意大利菜，墨西哥菜"
+  },
+  {
+    "id": 15,
+    "type": "text",
+    "question": "我最想改掉的缺点是什么？",
+    "bobAnswer": "完美主义导致的拖延症"
+  },
+  {
+    "id": 16,
+    "type": "text",
+    "question": "你最怕我误解你的一点是什么？",
+    "bobAnswer": "我怕你觉得我没能力给你想要的生活"
+  },
+  {
+    "id": 17,
+    "type": "text",
+    "question": "你现在感觉幸福吗？",
+    "bobAnswer": "不太"
+  },
+  {
+    "id": 18,
+    "type": "text",
+    "question": "你觉得自己在感情中最需要被满足的需求是什么？",
+    "bobAnswer": "你的认可"
+  },
+  {
+    "id": 19,
+    "type": "text",
+    "question": "你最喜欢我穿什么风格的衣服？",
+    "bobAnswer": "不裸着都喜欢"
+  },
+  {
+    "id": 20,
+    "type": "text",
+    "question": "有没有一瞬间，你觉得“就是这个人了”？能说说吗？",
+    "bobAnswer": "她捂嘴笑的时候"
+  },
+  {
+    "id": 21,
+    "type": "text",
+    "question": "我最喜欢的音乐类型是？",
+    "bobAnswer": "色情或带有政治目的的RNB"
+  },
+  {
+    "id": 22,
+    "type": "text",
+    "question": "如果两个人结婚了，你喜欢家庭是什么氛围？",
+    "bobAnswer": "我累成狗的回家以后，她能抱抱我"
+  },
+  {
+    "id": 23,
+    "type": "text",
+    "question": "如果有一个特质，是你的另一半必须有的，那么是什么？",
+    "bobAnswer": "独立思考或者生活的能力"
+  },
+  {
+    "id": 24,
+    "type": "text",
+    "question": "你最希望你的另一半在你生日时给你什么礼物？",
+    "bobAnswer": "当着所有亲朋好友的面给我嘴一个"
+  },
+  {
+    "id": 25,
+    "type": "text",
+    "question": "如果可以用一种颜色形容我们的关系，你会选什么？为什么？",
+    "bobAnswer": "#D2CBB5 - 因为有点暖，但不多"
+  },
+  {
+    "id": 26,
+    "type": "text",
+    "question": "有没有哪句话，是你一直想对我说但是说不出口的？",
+    "bobAnswer": "其实你确实蛮渣的（😁）"
+  },
+  {
+    "id": 27,
+    "type": "text",
+    "question": "你认为你的另一半做什么最能感动你？",
+    "bobAnswer": "有什么美好/伤心的东西都能想分享给我"
+  },
+  {
+    "id": 28,
+    "type": "text",
+    "question": "你最近一次因为什么而笑出声？",
+    "bobAnswer": "她回我消息了"
+  },
+  {
+    "id": 29,
+    "type": "text",
+    "question": "有没有哪次我做的小事，让你偷偷感动了很久？",
+    "bobAnswer": "你让我知道你不讨厌我"
+  },
+  {
+    "id": 30,
+    "type": "text",
+    "question": "如果有一天我们吵架了，你最希望我先说什么？",
+    "bobAnswer": "睡觉吗？"
+  }
+]

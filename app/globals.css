@@ -1,26 +1,133 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Figma Design - Romantic Pink Theme */
+  --background: #FEF7F5;
+  --foreground: #2D2D2D;
+
+  /* Pink Primary Colors */
+  --primary: #FF6B9D;
+  --primary-light: #FFA8C5;
+  --primary-foreground: #ffffff;
+
+  /* Card & Surface Colors */
+  --card: #ffffff;
+  --card-foreground: #2D2D2D;
+
+  /* Secondary Colors */
+  --secondary: #FFF0F5;
+  --secondary-foreground: #2D2D2D;
+
+  /* Success/Match Color */
+  --success: #4ADE80;
+  --success-foreground: #ffffff;
+
+  /* Muted Colors */
+  --muted: #FFF0F5;
+  --muted-foreground: #717182;
+
+  /* Accent Colors */
+  --accent: #FFE5EE;
+  --accent-foreground: #2D2D2D;
+
+  /* Borders & Inputs */
+  --border: rgba(255, 107, 157, 0.2);
+  --input-background: #ffffff;
+
+  /* Border Radius - More rounded for romantic feel */
+  --radius: 1rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  /* 防止移动端双击缩放 */
+  touch-action: manipulation;
+  /* 优化移动端滚动 */
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
-  background: var(--background);
+  /* The background is now handled by .romantic-bg on the homepage, 
+     or a default can be set here for other pages */
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  /* 移动端优化 */
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden;
+  /* 防止文字选择 */
+  -webkit-user-select: none;
+  user-select: none;
+  /* 优化字体渲染 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Styles for the new homepage design */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.romantic-bg {
+  background: linear-gradient(135deg, #fde9ef 0%, #fef7f5 100%);
+}
+
+.romantic-panel {
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+/* 移动端按钮点击效果优化 */
+button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* 输入框优化 */
+input, textarea {
+  -webkit-user-select: text;
+  user-select: text;
+  font-size: 16px; /* 防止 iOS 自动缩放 */
+}
+
+/* 图片优化 */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 自定义动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* 文本截断 */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
