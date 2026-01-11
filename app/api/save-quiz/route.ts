@@ -5,43 +5,46 @@ import { kv } from '@vercel/kv';
 interface QuizData {
   quizId: string;
   answers: Record<number, string>;
-  luluQuestions: string[];
+  luluQuestions?: string[];
+  isComplete?: boolean;
 }
 
 // Main POST handler for the API route
 export async function POST(request: Request) {
   try {
     const body: QuizData = await request.json();
-    const { quizId, answers, luluQuestions } = body;
+    const { quizId, answers, luluQuestions, isComplete = false } = body;
+
+    // Use a consistent key for each quiz session
+    const key = `quiz:${quizId}`;
+
+    // Get existing data if any
+    const existingDataStr = await kv.get(key);
+    const existingData = existingDataStr ? JSON.parse(existingDataStr as string) : {};
 
     // Prepare the data for storage
     const results = {
       quizId,
-      luluAnswers: answers,
-      luluQuestionsForBob: luluQuestions,
-      submittedAt: new Date().toISOString(),
+      luluAnswers: { ...existingData.luluAnswers, ...answers },
+      luluQuestionsForBob: luluQuestions || existingData.luluQuestionsForBob || [],
+      isComplete,
+      lastUpdated: new Date().toISOString(),
+      submittedAt: isComplete ? new Date().toISOString() : existingData.submittedAt,
     };
 
-    // --- Vercel KV Storage ---
-    // The Vercel KV client is automatically configured by environment variables
-    // when deployed on Vercel. For local development, you'll need to link
-    // your project to a Vercel KV store. See the deployment guide for details.
-
-    // We'll create a unique key for this quiz submission.
-    const key = `quiz:${quizId}:${new Date().getTime()}`;
-    
     // Use kv.set() to store the entire results object.
-    await kv.set(key, JSON.stringify(results));
+    // Set expiration to 30 days (2592000 seconds)
+    await kv.set(key, JSON.stringify(results), { ex: 2592000 });
 
     // Return a success response
     return NextResponse.json({
-      message: 'Quiz data saved successfully!',
+      message: isComplete ? 'Quiz completed and saved!' : 'Progress saved successfully!',
       storageKey: key,
     });
 
   } catch (error) {
     console.error('Error saving quiz data to Vercel KV:', error);
-    
+
     // Return a generic error response
     return NextResponse.json(
       { message: 'Failed to save quiz data.' },

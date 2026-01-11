@@ -31,7 +31,7 @@ export default function AskBobPage({ params }: { params: { id: string } }) {
 
   const handleComplete = async () => {
     setIsSaving(true);
-    
+
     // In a real app, this is an API call
     if (typeof window !== 'undefined') {
       // Save Lulu's new questions to sessionStorage for the results page
@@ -51,6 +51,7 @@ export default function AskBobPage({ params }: { params: { id: string } }) {
             quizId,
             answers,
             luluQuestions: questions,
+            isComplete: true, // Mark as complete
           }),
         });
 

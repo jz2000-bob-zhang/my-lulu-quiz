@@ -76,15 +76,40 @@ function QuestionsContent({ quizId }: { quizId: string }) {
   const handleSubmit = () => {
     const answer = textAnswer;
     if (!answer.trim()) return;
-    
+
     setUserAnswer(answer);
-    setAnswers(prev => ({ ...prev, [question.id]: answer }));
+    const updatedAnswers = { ...answers, [question.id]: answer };
+    setAnswers(updatedAnswers);
     setShowComparison(true);
-    
+
+    // Auto-save to Redis after answering
+    saveToRedis(updatedAnswers);
+
     // Auto advance logic
     setTimeout(() => {
       handleNext();
     }, 3000); // 3 seconds delay to read the comparison
+  };
+
+  // Function to save progress to Redis
+  const saveToRedis = async (currentAnswers: Record<number, string>) => {
+    try {
+      await fetch('/api/save-quiz', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          quizId,
+          answers: currentAnswers,
+          isComplete: false,
+        }),
+      });
+      console.log('Progress auto-saved to Redis');
+    } catch (error) {
+      console.error('Failed to auto-save progress:', error);
+      // Don't show error to user, just log it
+    }
   };
 
   const handleNext = () => {
