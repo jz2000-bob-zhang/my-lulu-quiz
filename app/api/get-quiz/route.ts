@@ -6,6 +6,9 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const quizId = searchParams.get('quizId');
 
+    console.log('=== GET QUIZ API ===');
+    console.log('Quiz ID:', quizId);
+
     if (!quizId) {
       return NextResponse.json(
         { message: 'quizId is required' },
@@ -38,7 +41,10 @@ export async function GET(request: Request) {
       LIMIT 1
     `;
 
+    console.log('Query result rows:', result.rows.length);
+
     if (result.rows.length === 0) {
+      console.log('No records found');
       return NextResponse.json({
         answers: {},
         questions: [],
@@ -47,14 +53,21 @@ export async function GET(request: Request) {
     }
 
     const record = result.rows[0];
+    console.log('Record found:', record);
+    console.log('lulu_answers:', record.lulu_answers);
+    console.log('lulu_answers type:', typeof record.lulu_answers);
 
-    return NextResponse.json({
+    const responseData = {
       answers: record.lulu_answers || {},
       questions: record.lulu_questions_for_bob || [],
       isComplete: record.is_complete || false,
       createdAt: record.created_at,
       submittedAt: record.submitted_at,
-    });
+    };
+
+    console.log('Returning data:', responseData);
+
+    return NextResponse.json(responseData);
 
   } catch (error) {
     console.error('Error fetching quiz data:', error);
