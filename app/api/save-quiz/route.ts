@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { sql } from '@vercel/postgres';
 
 // Define the structure of the data we expect to receive
 interface QuizData {
@@ -15,39 +15,66 @@ export async function POST(request: Request) {
     const body: QuizData = await request.json();
     const { quizId, answers, luluQuestions, isComplete = false } = body;
 
-    // Use a consistent key for each quiz session
-    const key = `quiz:${quizId}`;
+    // Check if a record already exists for this quiz_id
+    const existingRecord = await sql`
+      SELECT * FROM quiz_responses
+      WHERE quiz_id = ${quizId}
+      ORDER BY created_at DESC
+      LIMIT 1
+    `;
 
-    // Get existing data if any
-    const existingDataStr = await kv.get(key);
-    const existingData = existingDataStr ? JSON.parse(existingDataStr as string) : {};
+    if (existingRecord.rows.length > 0) {
+      // Update existing record
+      const existing = existingRecord.rows[0];
+      const mergedAnswers = { ...existing.lulu_answers, ...answers };
+      const updatedQuestions = luluQuestions || existing.lulu_questions_for_bob;
 
-    // Prepare the data for storage
-    const results = {
-      quizId,
-      luluAnswers: { ...existingData.luluAnswers, ...answers },
-      luluQuestionsForBob: luluQuestions || existingData.luluQuestionsForBob || [],
-      isComplete,
-      lastUpdated: new Date().toISOString(),
-      submittedAt: isComplete ? new Date().toISOString() : existingData.submittedAt,
-    };
+      await sql`
+        UPDATE quiz_responses
+        SET
+          lulu_answers = ${JSON.stringify(mergedAnswers)}::jsonb,
+          lulu_questions_for_bob = ${JSON.stringify(updatedQuestions)}::jsonb,
+          is_complete = ${isComplete},
+          submitted_at = ${isComplete ? new Date().toISOString() : existing.submitted_at}
+        WHERE id = ${existing.id}
+      `;
 
-    // Use kv.set() to store the entire results object.
-    // Set expiration to 30 days (2592000 seconds)
-    await kv.set(key, JSON.stringify(results), { ex: 2592000 });
+      return NextResponse.json({
+        message: isComplete ? 'Quiz completed and saved!' : 'Progress saved successfully!',
+        recordId: existing.id,
+      });
+    } else {
+      // Insert new record
+      const result = await sql`
+        INSERT INTO quiz_responses (
+          quiz_id,
+          lulu_answers,
+          lulu_questions_for_bob,
+          is_complete,
+          submitted_at
+        )
+        VALUES (
+          ${quizId},
+          ${JSON.stringify(answers)}::jsonb,
+          ${JSON.stringify(luluQuestions || [])}::jsonb,
+          ${isComplete},
+          ${isComplete ? new Date().toISOString() : null}
+        )
+        RETURNING id
+      `;
 
-    // Return a success response
-    return NextResponse.json({
-      message: isComplete ? 'Quiz completed and saved!' : 'Progress saved successfully!',
-      storageKey: key,
-    });
+      return NextResponse.json({
+        message: isComplete ? 'Quiz completed and saved!' : 'Progress saved successfully!',
+        recordId: result.rows[0].id,
+      });
+    }
 
   } catch (error) {
-    console.error('Error saving quiz data to Vercel KV:', error);
+    console.error('Error saving quiz data to Postgres:', error);
 
     // Return a generic error response
     return NextResponse.json(
-      { message: 'Failed to save quiz data.' },
+      { message: 'Failed to save quiz data.', error: String(error) },
       { status: 500 }
     );
   }
