@@ -9,9 +9,18 @@ interface QuizData {
   isComplete?: boolean;
 }
 
+// Ensure database connection is configured
+function ensureConnection() {
+  if (!process.env.POSTGRES_URL && !process.env.POSTGRES_DATABASE) {
+    throw new Error('Database connection not configured. Please check environment variables.');
+  }
+}
+
 // Main POST handler for the API route
 export async function POST(request: Request) {
   try {
+    ensureConnection();
+
     const body: QuizData = await request.json();
     const { quizId, answers, luluQuestions, isComplete = false } = body;
 
