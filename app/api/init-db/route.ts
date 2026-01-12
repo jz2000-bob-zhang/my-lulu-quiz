@@ -1,10 +1,25 @@
 import { NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { createPool } from '@vercel/postgres';
 
 export async function GET() {
   try {
+    // Use DATABASE_URL or POSTGRES_URL
+    const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+
+    if (!connectionString) {
+      return NextResponse.json(
+        {
+          message: 'Database connection string not found',
+          availableVars: Object.keys(process.env).filter(k => k.includes('POSTGRES') || k.includes('DATABASE'))
+        },
+        { status: 500 }
+      );
+    }
+
+    const db = createPool({ connectionString });
+
     // Create table
-    await sql`
+    await db.sql`
       CREATE TABLE IF NOT EXISTS quiz_responses (
         id SERIAL PRIMARY KEY,
         quiz_id VARCHAR(255) NOT NULL,
@@ -18,11 +33,11 @@ export async function GET() {
     `;
 
     // Create indexes
-    await sql`
+    await db.sql`
       CREATE INDEX IF NOT EXISTS idx_quiz_id ON quiz_responses(quiz_id)
     `;
 
-    await sql`
+    await db.sql`
       CREATE INDEX IF NOT EXISTS idx_is_complete ON quiz_responses(is_complete)
     `;
 

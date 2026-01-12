@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { createPool } from '@vercel/postgres';
 
 // Define the structure of the data we expect to receive
 interface QuizData {
@@ -9,23 +9,26 @@ interface QuizData {
   isComplete?: boolean;
 }
 
-// Ensure database connection is configured
-function ensureConnection() {
-  if (!process.env.POSTGRES_URL && !process.env.POSTGRES_DATABASE) {
-    throw new Error('Database connection not configured. Please check environment variables.');
-  }
-}
-
 // Main POST handler for the API route
 export async function POST(request: Request) {
   try {
-    ensureConnection();
+    // Use DATABASE_URL or POSTGRES_URL
+    const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+
+    if (!connectionString) {
+      return NextResponse.json(
+        { message: 'Database connection not configured' },
+        { status: 500 }
+      );
+    }
+
+    const db = createPool({ connectionString });
 
     const body: QuizData = await request.json();
     const { quizId, answers, luluQuestions, isComplete = false } = body;
 
     // Check if a record already exists for this quiz_id
-    const existingRecord = await sql`
+    const existingRecord = await db.sql`
       SELECT * FROM quiz_responses
       WHERE quiz_id = ${quizId}
       ORDER BY created_at DESC
@@ -38,7 +41,7 @@ export async function POST(request: Request) {
       const mergedAnswers = { ...existing.lulu_answers, ...answers };
       const updatedQuestions = luluQuestions || existing.lulu_questions_for_bob;
 
-      await sql`
+      await db.sql`
         UPDATE quiz_responses
         SET
           lulu_answers = ${JSON.stringify(mergedAnswers)}::jsonb,
@@ -54,7 +57,7 @@ export async function POST(request: Request) {
       });
     } else {
       // Insert new record
-      const result = await sql`
+      const result = await db.sql`
         INSERT INTO quiz_responses (
           quiz_id,
           lulu_answers,
