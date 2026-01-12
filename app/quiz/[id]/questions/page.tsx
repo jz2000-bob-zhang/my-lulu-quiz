@@ -39,15 +39,38 @@ function QuestionsContent({ quizId }: { quizId: string }) {
   }, [searchParams]);
 
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [isLoadingProgress, setIsLoadingProgress] = useState(true);
 
-  // Restore answers from storage on mount
+  // Restore answers from database or sessionStorage on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = sessionStorage.getItem(`quiz_answers_${quizId}`);
-      if (saved) {
-        setAnswers(JSON.parse(saved));
+    const loadProgress = async () => {
+      if (typeof window !== 'undefined') {
+        // First try sessionStorage
+        const saved = sessionStorage.getItem(`quiz_answers_${quizId}`);
+        if (saved) {
+          setAnswers(JSON.parse(saved));
+          setIsLoadingProgress(false);
+          return;
+        }
+
+        // If not in sessionStorage, try to load from database
+        try {
+          const response = await fetch(`/api/get-quiz?quizId=${quizId}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.answers && Object.keys(data.answers).length > 0) {
+              setAnswers(data.answers);
+              sessionStorage.setItem(`quiz_answers_${quizId}`, JSON.stringify(data.answers));
+            }
+          }
+        } catch (error) {
+          console.error('Failed to load progress:', error);
+        }
+        setIsLoadingProgress(false);
       }
-    }
+    };
+
+    loadProgress();
   }, [quizId]);
 
   // Persist answers to storage
@@ -61,6 +84,7 @@ function QuestionsContent({ quizId }: { quizId: string }) {
   const [textAnswer, setTextAnswer] = useState<string>("");
   const [showComparison, setShowComparison] = useState(false);
   const [userAnswer, setUserAnswer] = useState<string>("");
+  const [showHistory, setShowHistory] = useState(false);
 
   const question = questions[currentQuestionIndex];
   const currentQuestionNumber = currentQuestionIndex + 1;
@@ -158,11 +182,73 @@ function QuestionsContent({ quizId }: { quizId: string }) {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <ProgressBar 
-            current={currentQuestionNumber} 
-            total={totalQuestions} 
+          <ProgressBar
+            current={currentQuestionNumber}
+            total={totalQuestions}
           />
+
+          {/* View History Button */}
+          {Object.keys(answers).length > 0 && (
+            <div className="mt-4 flex justify-center">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowHistory(!showHistory)}
+              >
+                {showHistory ? '隐藏' : '查看'}之前的答案
+              </Button>
+            </div>
+          )}
         </motion.div>
+
+        {/* History Modal */}
+        <AnimatePresence>
+          {showHistory && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+              onClick={() => setShowHistory(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-3xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+              >
+                <h3 className="text-2xl font-bold text-[#2D2D2D] mb-4">之前的答案</h3>
+                <div className="space-y-4">
+                  {questions.slice(0, currentQuestionIndex).map((q) => {
+                    const answer = answers[q.id];
+                    if (!answer) return null;
+
+                    return (
+                      <Card key={q.id} className="p-4">
+                        <p className="text-sm text-[#717182] mb-2">问题 {q.id}</p>
+                        <p className="font-semibold text-[#2D2D2D] mb-3">{q.question}</p>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-xs text-[#717182] mb-1">你的答案</p>
+                            <p className="text-[#FF6B9D] font-medium">{answer}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-[#717182] mb-1">Bob 的答案</p>
+                            <p className="text-[#2D2D2D] font-medium">{q.bobAnswer}</p>
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+                <div className="mt-6 flex justify-center">
+                  <Button onClick={() => setShowHistory(false)}>关闭</Button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <AnimatePresence mode="wait">
           {!showComparison ? (

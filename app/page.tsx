@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Heart, Sparkles } from 'lucide-react';
 import Button from '@/components/Button';
 import ImageWithFallback from '@/components/ImageWithFallback';
+import LuluPigFireworks from '@/components/LuluPigFireworks';
 
 export default function Home() {
   const router = useRouter();
@@ -16,6 +17,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-[#FEF7F5]">
+      {/* Lulu Pig Fireworks Animation */}
+      <LuluPigFireworks />
+
       {/* Decorative background elements from the quiz theme */}
       <motion.div
         className="absolute top-20 left-10 text-pink-300"

@@ -1,10 +1,12 @@
 'use client';
 
 import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Sparkles, CheckCircle2 } from "lucide-react";
+import { Sparkles, CheckCircle2, RefreshCw } from "lucide-react";
 
 import Card from "@/components/Card";
+import Button from "@/components/Button";
 import rawQuestions from "@/data/questions.json";
 
 interface Question {
@@ -20,10 +22,21 @@ const questions = rawQuestions as Question[];
 
 export default function ResultsPage({ params }: { params: { id: string } }) {
   const { id: quizId } = params;
-  
+  const router = useRouter();
+
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
   const [luluQuestions, setLuluQuestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const handleRetake = () => {
+    // Clear session storage
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem(`quiz_answers_${quizId}`);
+      sessionStorage.removeItem(`lulu_questions_${quizId}`);
+    }
+    // Redirect to quiz start
+    router.push(`/quiz/${quizId}`);
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -154,7 +167,7 @@ export default function ResultsPage({ params }: { params: { id: string } }) {
             <h2 className="text-xl font-semibold text-[#2D2D2D] mb-4">
               给 Bob 的提问
             </h2>
-            
+
             <Card className="p-6">
               <div className="space-y-4">
                 {luluQuestions.map((question, index) => (
@@ -178,6 +191,23 @@ export default function ResultsPage({ params }: { params: { id: string } }) {
             </Card>
           </motion.div>
         )}
+
+        {/* Retake Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mt-8 flex justify-center"
+        >
+          <Button
+            size="lg"
+            onClick={handleRetake}
+            className="gap-2"
+          >
+            <RefreshCw className="w-5 h-5" />
+            重新答题
+          </Button>
+        </motion.div>
       </div>
     </div>
   );
