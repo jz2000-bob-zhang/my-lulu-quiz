@@ -27,6 +27,10 @@ export default function Home() {
         if (response.ok) {
           const data = await response.json();
           console.log('Progress data:', data);
+          console.log('Answers:', data.answers);
+          console.log('Answers keys:', Object.keys(data.answers || {}));
+          console.log('Answers length:', Object.keys(data.answers || {}).length);
+          console.log('Is complete:', data.isComplete);
 
           // If there are answers and quiz is not complete, redirect to continue
           if (data.answers && Object.keys(data.answers).length > 0 && !data.isComplete) {
@@ -38,6 +42,8 @@ export default function Home() {
             return;
           } else {
             console.log('No progress found or quiz completed');
+            console.log('Reason: answers empty?', Object.keys(data.answers || {}).length === 0);
+            console.log('Reason: quiz complete?', data.isComplete);
           }
         }
       } catch (error) {
