@@ -16,6 +16,7 @@ export async function POST(request: Request) {
     const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
     if (!connectionString) {
+      console.error('Database connection not configured');
       return NextResponse.json(
         { message: 'Database connection not configured' },
         { status: 500 }
@@ -27,6 +28,12 @@ export async function POST(request: Request) {
     const body: QuizData = await request.json();
     const { quizId, answers, luluQuestions, isComplete = false } = body;
 
+    console.log('=== SAVE QUIZ API ===');
+    console.log('Quiz ID:', quizId);
+    console.log('Answers:', answers);
+    console.log('Answers keys:', Object.keys(answers));
+    console.log('Is complete:', isComplete);
+
     // Check if a record already exists for this quiz_id
     const existingRecord = await db.sql`
       SELECT * FROM quiz_responses
@@ -35,10 +42,16 @@ export async function POST(request: Request) {
       LIMIT 1
     `;
 
+    console.log('Existing records found:', existingRecord.rows.length);
+
     if (existingRecord.rows.length > 0) {
       // Update existing record
       const existing = existingRecord.rows[0];
+      console.log('Existing answers:', existing.lulu_answers);
+
       const mergedAnswers = { ...existing.lulu_answers, ...answers };
+      console.log('Merged answers:', mergedAnswers);
+
       const updatedQuestions = luluQuestions || existing.lulu_questions_for_bob;
 
       await db.sql`
@@ -51,12 +64,16 @@ export async function POST(request: Request) {
         WHERE id = ${existing.id}
       `;
 
+      console.log('Updated record ID:', existing.id);
+
       return NextResponse.json({
         message: isComplete ? 'Quiz completed and saved!' : 'Progress saved successfully!',
         recordId: existing.id,
       });
     } else {
       // Insert new record
+      console.log('Creating new record');
+
       const result = await db.sql`
         INSERT INTO quiz_responses (
           quiz_id,
@@ -74,6 +91,8 @@ export async function POST(request: Request) {
         )
         RETURNING id
       `;
+
+      console.log('Created new record ID:', result.rows[0].id);
 
       return NextResponse.json({
         message: isComplete ? 'Quiz completed and saved!' : 'Progress saved successfully!',
