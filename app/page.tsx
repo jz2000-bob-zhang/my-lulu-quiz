@@ -15,20 +15,29 @@ export default function Home() {
   useEffect(() => {
     // Check if there's existing progress
     const checkProgress = async () => {
-      const quizId = 'default'; // or 'test', depending on your setup
+      const quizId = 'default';
 
       try {
         // Check database for progress
         const response = await fetch(`/api/get-quiz?quizId=${quizId}`);
+
+        console.log('Checking progress for quizId:', quizId);
+        console.log('Response status:', response.status);
+
         if (response.ok) {
           const data = await response.json();
+          console.log('Progress data:', data);
 
           // If there are answers and quiz is not complete, redirect to continue
           if (data.answers && Object.keys(data.answers).length > 0 && !data.isComplete) {
             const answeredCount = Object.keys(data.answers).length;
+            console.log('Found progress, redirecting to question:', answeredCount);
+
             // Redirect to the next unanswered question
             router.push(`/quiz/${quizId}/questions?q=${answeredCount}`);
             return;
+          } else {
+            console.log('No progress found or quiz completed');
           }
         }
       } catch (error) {
