@@ -32,6 +32,13 @@ export default function Home() {
           console.log('Answers length:', Object.keys(data.answers || {}).length);
           console.log('Is complete:', data.isComplete);
 
+          // If quiz is complete, redirect to results
+          if (data.isComplete) {
+            console.log('Quiz completed, redirecting to results');
+            router.push(`/quiz/${quizId}/results`);
+            return;
+          }
+
           // If there are answers and quiz is not complete, redirect to continue
           if (data.answers && Object.keys(data.answers).length > 0 && !data.isComplete) {
             const answeredCount = Object.keys(data.answers).length;

@@ -28,30 +28,69 @@ export default function ResultsPage({ params }: { params: { id: string } }) {
   const [luluQuestions, setLuluQuestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const handleRetake = () => {
+  const handleRetake = async () => {
+    // Clear database
+    try {
+      await fetch('/api/clear-all-quiz', {
+        method: 'POST',
+      });
+    } catch (error) {
+      console.error('Failed to clear database:', error);
+    }
+
     // Clear session storage
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem(`quiz_answers_${quizId}`);
       sessionStorage.removeItem(`lulu_questions_${quizId}`);
+      sessionStorage.clear();
+      localStorage.clear();
     }
-    // Redirect to quiz start
-    router.push(`/quiz/${quizId}`);
+
+    // Redirect to home page
+    router.push('/');
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Load answers
-      const savedAnswers = sessionStorage.getItem(`quiz_answers_${quizId}`);
-      setUserAnswers(savedAnswers ? JSON.parse(savedAnswers) : {});
+    const loadData = async () => {
+      if (typeof window !== 'undefined') {
+        // First try sessionStorage
+        const savedAnswers = sessionStorage.getItem(`quiz_answers_${quizId}`);
+        const savedQuestions = sessionStorage.getItem(`lulu_questions_${quizId}`);
 
-      // Load Lulu's questions
-      const savedQuestions = sessionStorage.getItem(`lulu_questions_${quizId}`);
-      if (savedQuestions) {
-        setLuluQuestions(JSON.parse(savedQuestions));
+        if (savedAnswers) {
+          setUserAnswers(JSON.parse(savedAnswers));
+        }
+
+        if (savedQuestions) {
+          setLuluQuestions(JSON.parse(savedQuestions));
+        }
+
+        // If no data in sessionStorage, try to load from database
+        if (!savedAnswers) {
+          try {
+            const response = await fetch(`/api/get-quiz?quizId=${quizId}`);
+            if (response.ok) {
+              const data = await response.json();
+              if (data.answers && Object.keys(data.answers).length > 0) {
+                setUserAnswers(data.answers);
+                // Save to sessionStorage for future use
+                sessionStorage.setItem(`quiz_answers_${quizId}`, JSON.stringify(data.answers));
+              }
+              if (data.questions && data.questions.length > 0) {
+                setLuluQuestions(data.questions);
+                sessionStorage.setItem(`lulu_questions_${quizId}`, JSON.stringify(data.questions));
+              }
+            }
+          } catch (error) {
+            console.error('Failed to load data from database:', error);
+          }
+        }
+
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
-    }
+    };
+
+    loadData();
   }, [quizId]);
 
   if (isLoading) {

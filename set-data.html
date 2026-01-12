@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Set Quiz Data</title>
+</head>
+<body>
+    <h1>Setting quiz data...</h1>
+    <script>
+        const answers = {
+            "1": "斯文败类的感觉 挺有品味",
+            "2": "努力 会认真对待自己想要做的事",
+            "3": "不好说，现在喜欢在热闹的聚会中安静的独处",
+            "4": "信念感",
+            "5": "能记得我的喜好",
+            "6": "时间自由 财富自由 想去哪就能随时去哪",
+            "7": "秋天",
+            "8": "躺一天睡大觉",
+            "9": "能吃到一起，下了班去吃好吃的，一起运动一起散步，有两个孩子，一只猫猫一只狗狗，周末假期去外面的世界看看",
+            "10": "被肯定",
+            "11": "少女的祈祷",
+            "12": "有",
+            "13": "前前任",
+            "14": "鲁菜 日料 湘菜或者本帮菜",
+            "15": "三分钟热度，容易退缩",
+            "16": "没有误解我，因为通常你都会先问我的想法",
+            "17": "幸福",
+            "18": "无论是否在身边只要想到就会安心的感觉，有任何问题都会给我指明方向",
+            "19": "穿西装挺帅的",
+            "20": "没有",
+            "21": "苦情歌 哈哈",
+            "22": "相处和谐，是夫妻也是最好的朋友的感觉。",
+            "23": "真诚善良，强大内核，情绪稳定，浪漫温柔，活泼勇敢，自洽而内求，达观而内醒。",
+            "24": "我很喜欢但一直没有的…？",
+            "25": "蓝色 挺纯粹的颜色",
+            "26": "抱歉。出于种种原因，以前没能给你对等的爱",
+            "27": "耐心的爱着我",
+            "28": "你说我确实挺渣的 请问这对吗",
+            "29": "给我做饭把厨房差点给炸了",
+            "30": "先吃点东西再吵架"
+        };
+
+        const questions = ["当初你没有回美国继续读书 真的是因为我吗", "你是从什么时候喜欢我的"];
+
+        sessionStorage.setItem('quiz_answers_default', JSON.stringify(answers));
+        sessionStorage.setItem('lulu_questions_default', JSON.stringify(questions));
+
+        document.body.innerHTML = '<h1>Data set successfully!</h1><p>Redirecting to results page...</p>';
+
+        setTimeout(() => {
+            window.location.href = 'http://localhost:3001/quiz/default/results';
+        }, 1000);
+    </script>
+</body>
+</html>
