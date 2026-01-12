@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Sparkles } from 'lucide-react';
 import Button from '@/components/Button';
@@ -9,11 +10,53 @@ import LuluPigFireworks from '@/components/LuluPigFireworks';
 
 export default function Home() {
   const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    // Check if there's existing progress
+    const checkProgress = async () => {
+      const quizId = 'default'; // or 'test', depending on your setup
+
+      try {
+        // Check database for progress
+        const response = await fetch(`/api/get-quiz?quizId=${quizId}`);
+        if (response.ok) {
+          const data = await response.json();
+
+          // If there are answers and quiz is not complete, redirect to continue
+          if (data.answers && Object.keys(data.answers).length > 0 && !data.isComplete) {
+            const answeredCount = Object.keys(data.answers).length;
+            // Redirect to the next unanswered question
+            router.push(`/quiz/${quizId}/questions?q=${answeredCount}`);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to check progress:', error);
+      }
+
+      setIsChecking(false);
+    };
+
+    checkProgress();
+  }, [router]);
 
   const handleStart = () => {
-    // Navigate directly to the first question, skipping the quiz welcome page.
-    router.push('/quiz/test/questions?q=0');
+    // Navigate directly to the first question
+    router.push('/quiz/default/questions?q=0');
   };
+
+  // Show loading while checking progress
+  if (isChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FEF7F5]">
+        <div className="text-center">
+          <Sparkles className="w-8 h-8 text-[#FF6B9D] animate-spin mx-auto mb-4" />
+          <p className="text-[#717182]">加载中...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-[#FEF7F5]">
